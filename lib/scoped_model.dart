@@ -54,9 +54,13 @@ abstract class Model extends Listenable {
 
   /// Should be called only by [Model] when the model has changed.
   @protected
-  void notifyListeners() {
+  void notifyListeners({bool forced = false}) {
     // We schedule a microtask to debounce multiple changes that can occur
     // all at once.
+   if (forced) {
+     _listeners.toList().forEach((VoidCallback listener) => listener());
+     return;
+   }
     if (_microtaskVersion == _version) {
       _microtaskVersion++;
       scheduleMicrotask(() {
